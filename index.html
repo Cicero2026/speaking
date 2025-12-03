@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>演講學 期末考題庫小測驗：蛋糕 vs 冰塊</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* ===== 基本版面 ===== */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8fafc;
+      color: #111827;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 900px;
+      width: 100%;
+      padding: 20px 16px 40px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.3rem;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #4b5563;
+    }
+    .tagline {
+      text-align: center;
+      margin-bottom: 1.2rem;
+      font-weight: 500;
+    }
+
+    /* ===== 卡片 ===== */
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+      padding: 18px 16px 20px;
+      margin-bottom: 16px;
+    }
+
+    /* ===== 控制區 ===== */
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.1s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1) inset;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    .btn-muted {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    .btn-option {
+      width: 100%;
+      text-align: left;
+      justify-content: flex-start;
+      margin-bottom: 8px;
+      background: #f9fafb;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+    }
+    .btn-option:hover {
+      background: #eef2ff;
+      border-color: #c7d2fe;
+    }
+    .btn-option.correct {
+      background: #dcfce7;
+      border-color: #16a34a;
+    }
+    .btn-option.incorrect {
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+    .btn-option.disabled {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    /* ===== 題目與進度 ===== */
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+    .progress-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+    .dot.active {
+      background: #6366f1;
+    }
+    .dot.done {
+      background: #22c55e;
+    }
+
+    .question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    /* ===== 回饋訊息 ===== */
+    .feedback {
+      margin-top: 8px;
+      min-height: 24px;
+      font-size: 0.96rem;
+      font-weight: 500;
+    }
+    .feedback.correct {
+      color: #16a34a;
+    }
+    .feedback.incorrect {
+      color: #b91c1c;
+    }
+
+    /* ===== 蛋糕 & 冰塊列 ===== */
+    .score-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.95rem;
+    }
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 24px;
+      flex-wrap: wrap;
+    }
+    .score-label {
+      min-width: 90px;
+      font-weight: 600;
+    }
+    .score-icons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+    }
+
+    /* ===== 結果區 ===== */
+    .result {
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 4px;
+    }
+    .result.good {
+      color: #16a34a;
+    }
+    .result.bad {
+      color: #b91c1c;
+    }
+    .result.tie {
+      color: #92400e;
+    }
+
+    /* ===== RWD ===== */
+    @media (min-width: 640px) {
+      .card {
+        padding: 20px 20px 22px;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 聲音：請依需要替換成自己的檔案 -->
+  <!-- 背景音樂（輕快） -->
+  <audio id="bgMusic" loop>
+    <source src="BG.MP3" type="audio/mpeg" />
+  </audio>
+
+  <!-- 答對：鼓掌 -->
+  <audio id="applauseSound">
+    <source src="clap.MP3" type="audio/mpeg" />
+  </audio>
+
+  <!-- 答錯／冰塊較多：單一下鼓聲 -->
+  <audio id="drumSound">
+    <source src="drum.MP3" type="audio/mpeg" />
+  </audio>
+
+  <!-- 結果蛋糕較多：歡呼 -->
+  <audio id="cheerSound">
+    <source src="WOW.MP3" type="audio/mpeg" />
+  </audio>
+
+  <div class="container">
+    <h1>演講學 期末考題庫小測驗</h1>
+    <div class="subtitle">課程：演講學｜每回合 5 題｜答對 🎂 蛋糕、答錯 🧊 冰塊</div>
+    <div class="tagline">最後如果蛋糕比冰塊多，會有全場歡呼；如果冰塊比較多，就只剩下孤獨的鼓聲⋯</div>
+
+    <div class="card">
+      <div class="control-row">
+        <button id="startBtn" class="btn-primary">
+          ▶️ 開始測驗
+        </button>
+        <button id="nextBtn" class="btn-secondary" style="display:none;">
+          ➡️ 下一題
+        </button>
+        <button id="resetBtn" class="btn-secondary" style="display:none;">
+          🔁 重新測驗（抽新 5 題）
+        </button>
+        <button id="musicBtn" class="btn-muted">
+          🎵 Music: OFF
+        </button>
+      </div>
+
+      <div class="status-row">
+        <div id="progressText">請先按「開始測驗」</div>
+        <div class="progress-dots" id="progressDots"></div>
+      </div>
+
+      <div id="questionArea" style="display:none;">
+        <div class="question-text" id="questionText"></div>
+        <div id="optionsContainer"></div>
+        <div id="feedback" class="feedback"></div>
+      </div>
+
+      <div id="resultArea" style="display:none; margin-top:10px;">
+        <div id="resultText" class="result"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="score-card">
+        <div class="score-row">
+          <div class="score-label">🎂 Cakes：</div>
+          <div id="cakeRow" class="score-icons"></div>
+        </div>
+        <div class="score-row">
+          <div class="score-label">🧊 Ice blocks：</div>
+          <div id="iceRow" class="score-icons"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 題庫 -->
+  <script src="questions.js"></script>
+
+  <!-- 遊戲邏輯 -->
+  <script>
+    const TOTAL_PER_ROUND = 5;
+
+    const bgMusic = document.getElementById("bgMusic");
+    const applauseSound = document.getElementById("applauseSound");
+    const drumSound = document.getElementById("drumSound");
+    const cheerSound = document.getElementById("cheerSound");
+
+    const startBtn = document.getElementById("startBtn");
+    const nextBtn  = document.getElementById("nextBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const musicBtn = document.getElementById("musicBtn");
+
+    const progressText  = document.getElementById("progressText");
+    const progressDots  = document.getElementById("progressDots");
+    const questionArea  = document.getElementById("questionArea");
+    const questionText  = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const feedbackEl    = document.getElementById("feedback");
+
+    const resultArea = document.getElementById("resultArea");
+    const resultText = document.getElementById("resultText");
+
+    const cakeRow = document.getElementById("cakeRow");
+    const iceRow  = document.getElementById("iceRow");
+
+    let musicOn = false;
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let cakeCount = 0;
+    let iceCount = 0;
+    let answered = false;
+
+    function playSound(audio) {
+      if (!audio) return;
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    }
+
+    function toggleMusic() {
+      musicOn = !musicOn;
+      if (musicOn) {
+        bgMusic.play().catch(() => {});
+        musicBtn.textContent = "🎵 Music: ON";
+      } else {
+        bgMusic.pause();
+        musicBtn.textContent = "🎵 Music: OFF";
+      }
+    }
+
+    musicBtn.addEventListener("click", toggleMusic);
+
+    function shuffleArray(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function pickRandomQuestions() {
+      const shuffled = shuffleArray(QUESTIONS);
+      return shuffled.slice(0, TOTAL_PER_ROUND);
+    }
+
+    function resetScoreBoard() {
+      cakeCount = 0;
+      iceCount = 0;
+      cakeRow.innerHTML = "";
+      iceRow.innerHTML = "";
+    }
+
+    function addCake() {
+      cakeCount++;
+      const span = document.createElement("span");
+      span.textContent = "🎂";
+      cakeRow.appendChild(span);
+    }
+
+    function addIce() {
+      iceCount++;
+      const span = document.createElement("span");
+      span.textContent = "🧊";
+      iceRow.appendChild(span);
+    }
+
+    function updateProgress() {
+      progressText.textContent = `Question ${currentIndex + 1} / ${TOTAL_PER_ROUND}`;
+      progressDots.innerHTML = "";
+      for (let i = 0; i < TOTAL_PER_ROUND; i++) {
+        const dot = document.createElement("div");
+        dot.classList.add("dot");
+        if (i < currentIndex) {
+          dot.classList.add("done");
+        } else if (i === currentIndex) {
+          dot.classList.add("active");
+        }
+        progressDots.appendChild(dot);
+      }
+    }
+
+    function renderQuestion() {
+      feedbackEl.textContent = "";
+      feedbackEl.className = "feedback";
+      resultArea.style.display = "none";
+      resultText.textContent = "";
+      nextBtn.style.display = "none";
+
+      if (currentIndex >= TOTAL_PER_ROUND) {
+        showResult();
+        return;
+      }
+
+      const q = currentQuestions[currentIndex];
+      questionArea.style.display = "block";
+      questionText.textContent = q.question;
+
+      optionsContainer.innerHTML = "";
+      const letters = ["A", "B", "C", "D"];
+
+      q.options.forEach((optText, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "btn-option";
+        btn.innerHTML = `<strong>${letters[idx]})</strong>&nbsp;&nbsp;${optText}`;
+        btn.dataset.letter = letters[idx];
+
+        btn.addEventListener("click", () => handleAnswer(btn, q));
+        optionsContainer.appendChild(btn);
+      });
+
+      answered = false;
+      updateProgress();
+    }
+
+    function disableOptions(markCorrectLetter, clickedLetter) {
+      const buttons = optionsContainer.querySelectorAll("button");
+      buttons.forEach(btn => {
+        const letter = btn.dataset.letter;
+        btn.classList.add("disabled");
+        if (letter === markCorrectLetter) {
+          btn.classList.add("correct");
+        }
+        if (clickedLetter && letter === clickedLetter && clickedLetter !== markCorrectLetter) {
+          btn.classList.add("incorrect");
+        }
+      });
+    }
+
+    function handleAnswer(button, q) {
+      if (answered) return;
+      answered = true;
+
+      const chosen = button.dataset.letter;
+      const correctLetter = q.correct;
+
+      disableOptions(correctLetter, chosen);
+
+      if (chosen === correctLetter) {
+        feedbackEl.textContent = "✔️ Correct! Good job!";
+        feedbackEl.classList.add("correct");
+        addCake();
+        playSound(applauseSound);
+      } else {
+        feedbackEl.textContent = `✖️ Not quite. The correct answer is ${correctLetter}.`;
+        feedbackEl.classList.add("incorrect");
+        addIce();
+        playSound(drumSound);
+      }
+
+      if (currentIndex < TOTAL_PER_ROUND - 1) {
+        nextBtn.style.display = "inline-flex";
+      } else {
+        nextBtn.style.display = "inline-flex";
+        nextBtn.textContent = "✅ 看結果";
+      }
+    }
+
+    function showResult() {
+      questionArea.style.display = "none";
+      resultArea.style.display = "block";
+      resetBtn.style.display = "inline-flex";
+      startBtn.style.display = "none";
+      nextBtn.style.display = "none";
+      nextBtn.textContent = "➡️ 下一題";
+
+      if (cakeCount > iceCount) {
+        resultText.textContent =
+          `🎉 太棒了！你這回合的蛋糕（${cakeCount}）比冰塊（${iceCount}）多，期末考穩穩的！`;
+        resultText.className = "result good";
+        playSound(cheerSound);
+      } else if (iceCount > cakeCount) {
+        resultText.textContent =
+          `🧊 這次冰塊（${iceCount}）比蛋糕（${cakeCount}）多，再玩一回合就會更熟了！`;
+        resultText.className = "result bad";
+        playSound(drumSound);
+      } else {
+        resultText.textContent =
+          `🤝 平手！蛋糕 ${cakeCount} 顆，冰塊 ${iceCount} 個。再來一回合拉開差距！`;
+        resultText.className = "result tie";
+      }
+    }
+
+    function startQuiz() {
+      currentQuestions = pickRandomQuestions();
+      currentIndex = 0;
+      resetScoreBoard();
+      resultArea.style.display = "none";
+      resultText.textContent = "";
+
+      questionArea.style.display = "block";
+      progressText.textContent = "Question 1 / " + TOTAL_PER_ROUND;
+
+      startBtn.style.display = "none";
+      resetBtn.style.display = "inline-flex";
+      nextBtn.style.display = "none";
+      nextBtn.textContent = "➡️ 下一題";
+
+      if (!musicOn) {
+        // 先不強迫開，保留原本 OFF 狀態
+      } else {
+        bgMusic.play().catch(() => {});
+      }
+
+      renderQuestion();
+    }
+
+    function nextQuestion() {
+      if (currentIndex >= TOTAL_PER_ROUND) return;
+      currentIndex++;
+      renderQuestion();
+    }
+
+    function resetQuiz() {
+      currentQuestions = pickRandomQuestions();
+      currentIndex = 0;
+      resetScoreBoard();
+      resultArea.style.display = "none";
+      resultText.textContent = "";
+      nextBtn.style.display = "none";
+      nextBtn.textContent = "➡️ 下一題";
+      startBtn.style.display = "none"; // 一旦進入遊戲，就以 reset 為主
+      renderQuestion();
+    }
+
+    startBtn.addEventListener("click", startQuiz);
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex >= TOTAL_PER_ROUND - 1) {
+        // 已經是最後一題，顯示結果
+        currentIndex = TOTAL_PER_ROUND;
+        showResult();
+      } else {
+        nextQuestion();
+      }
+    });
+    resetBtn.addEventListener("click", resetQuiz);
+
+    // 初始狀態：顯示 5 個灰色進度點，讓畫面不要太空
+    (function initDots() {
+      progressDots.innerHTML = "";
+      for (let i = 0; i < TOTAL_PER_ROUND; i++) {
+        const dot = document.createElement("div");
+        dot.classList.add("dot");
+        progressDots.appendChild(dot);
+      }
+    })();
+  </script>
+</body>
+</html>
