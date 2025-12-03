@@ -355,7 +355,7 @@
     }
 
     function pickRandomQuestions() {
-      const shuffled = shuffleArray(QUESTIONS);
+      const shuffled = shuffleArray(questions);
       return shuffled.slice(0, TOTAL_PER_ROUND);
     }
 
@@ -447,7 +447,8 @@
       answered = true;
 
       const chosen = button.dataset.letter;
-      const correctLetter = q.correct;
+     const correctLetter = q.answer;
+
 
       disableOptions(correctLetter, chosen);
 
